@@ -6,7 +6,7 @@ from tracardi_mongodb_connector.model.configuration import MongoConfiguration
 class MongoClient:
     def __init__(self, config: MongoConfiguration):
         self.config = config
-        self.client = pymongo.MongoClient(config.uri)
+        self.client = pymongo.MongoClient(config.uri, serverSelectionTimeoutMS=config.timeout)
 
     def find(self, database, collection, query):
         database = self.client[database]

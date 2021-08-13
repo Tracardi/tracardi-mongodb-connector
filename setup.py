@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='tracardi-mongodb-connector',
-    version='0.1',
+    version='0.1.1',
     description='The purpose of this plugin is to connect to mongo and retrieve data.',
     long_description=long_description,
     long_description_content_type="text/markdown",

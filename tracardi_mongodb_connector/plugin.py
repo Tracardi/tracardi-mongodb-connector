@@ -49,12 +49,12 @@ def register() -> Plugin:
             className='MongoConnectorAction',
             inputs=["query"],
             outputs=['payload'],
-            version='0.1',
+            version='0.1.1',
             license="MIT",
             author="Risto Kowaczewski",
             init={
                 "source": {
-                    "id"
+                    "id": None,
                 },
                 "mongo": {
                     "database": None,
