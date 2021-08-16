@@ -37,8 +37,8 @@ class MongoConnectorAction(ActionRunner):
         self.client = None  # type: Optional[MongoClient]
 
     async def run(self, query):
-        result = self.client.find(self.config.mongo.database, self.config.mongo.collection, query)
-        return Result(port="payload", value=list(result))
+        result = await self.client.find(self.config.mongo.database, self.config.mongo.collection, query)
+        return Result(port="payload", value=result)
 
 
 def register() -> Plugin:
@@ -49,7 +49,7 @@ def register() -> Plugin:
             className='MongoConnectorAction',
             inputs=["query"],
             outputs=['payload'],
-            version='0.1.1',
+            version='0.1.4',
             license="MIT",
             author="Risto Kowaczewski",
             init={

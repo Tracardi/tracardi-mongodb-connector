@@ -4,7 +4,7 @@ from tracardi_mongodb_connector.plugin import MongoConnectorAction
 
 
 async def main():
-    id = '396f2f2b-82f9-44f0-ac71-fadec010ef18'
+    id = 'a3de6e9e-6558-45bd-a78f-d4ffc0346005'
 
     plugin = await MongoConnectorAction.build(**{
         "source": {
