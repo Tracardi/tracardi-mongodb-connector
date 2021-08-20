@@ -2,4 +2,3 @@ pydantic
 tracardi_plugin_sdk
 tracardi
 motor~=2.5.0
-
