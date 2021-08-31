@@ -36,9 +36,12 @@ class MongoConnectorAction(ActionRunner):
         self.config = PluginConfiguration(**kwargs)
         self.client = None  # type: Optional[MongoClient]
 
-    async def run(self, query):
-        result = await self.client.find(self.config.mongo.database, self.config.mongo.collection, query)
-        return Result(port="payload", value=result)
+    async def run(self, payload):
+        result = await self.client.find(self.config.mongo.database, self.config.mongo.collection, self.config.query)
+        return Result(port="payload", value={"result" :result})
+
+    # async def close(self):
+    #     self.client.close()
 
 
 def register() -> Plugin:
@@ -47,7 +50,7 @@ def register() -> Plugin:
         spec=Spec(
             module='tracardi_mongodb_connector.plugin',
             className='MongoConnectorAction',
-            inputs=["query"],
+            inputs=["payload"],
             outputs=['payload'],
             version='0.1.4',
             license="MIT",
@@ -59,7 +62,8 @@ def register() -> Plugin:
                 "mongo": {
                     "database": None,
                     "collection": None
-                }
+                },
+                "query": {}
             }
 
         ),

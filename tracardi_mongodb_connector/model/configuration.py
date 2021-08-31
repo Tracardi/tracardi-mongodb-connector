@@ -15,3 +15,4 @@ class MongoResource(BaseModel):
 class PluginConfiguration(BaseModel):
     source: Entity
     mongo: MongoResource
+    query: dict = {}
