@@ -4,7 +4,7 @@ from tracardi_plugin_sdk.service.plugin_runner import run_plugin
 
 init = {
         "source": {
-            "id": id
+            "id": "x"
         },
         "mongo": {
             "database": "local",
