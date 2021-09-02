@@ -1,12 +1,8 @@
-import asyncio
-
 from tracardi_mongodb_connector.plugin import MongoConnectorAction
+from tracardi_plugin_sdk.service.plugin_runner import run_plugin
 
 
-async def main():
-    id = 'a3de6e9e-6558-45bd-a78f-d4ffc0346005'
-
-    plugin = await MongoConnectorAction.build(**{
+init = {
         "source": {
             "id": id
         },
@@ -14,8 +10,25 @@ async def main():
             "database": "local",
             "collection": "startup_log"
         }
-    })
+    }
 
-    print(await plugin.run({}))
+payload = {}
 
-asyncio.run(main())
+result = run_plugin(MongoConnectorAction, init, payload)
+print(result)
+# async def main():
+#     id = 'a3de6e9e-6558-45bd-a78f-d4ffc0346005'
+#
+#     plugin = await MongoConnectorAction.build(**{
+#         "source": {
+#             "id": id
+#         },
+#         "mongo": {
+#             "database": "local",
+#             "collection": "startup_log"
+#         }
+#     })
+#
+#     print(await plugin.run({}))
+#
+# asyncio.run(main())
