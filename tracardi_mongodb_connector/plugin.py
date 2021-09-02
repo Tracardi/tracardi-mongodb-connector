@@ -14,7 +14,7 @@ class MongoConnectorAction(ActionRunner):
     @staticmethod
     async def build(**kwargs) -> 'MongoConnectorAction':
         plugin = MongoConnectorAction(**kwargs)
-        source = read_source(plugin.config.source.id)
+        source = await read_source(plugin.config.source.id)
         mongo_config = MongoConfiguration(
             **source.config
         )
@@ -43,7 +43,7 @@ def register() -> Plugin:
             className='MongoConnectorAction',
             inputs=["payload"],
             outputs=['payload'],
-            version='0.1.5',
+            version='0.1.6',
             license="MIT",
             author="Risto Kowaczewski",
             init={
