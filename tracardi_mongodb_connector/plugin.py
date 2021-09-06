@@ -6,7 +6,7 @@ from tracardi_plugin_sdk.domain.result import Result
 from tracardi_mongodb_connector.model.client import MongoClient
 from tracardi_mongodb_connector.model.configuration import PluginConfiguration, MongoConfiguration
 
-from tracardi.service.source_reader import read_source
+from tracardi.service.storage.helpers.source_reader import read_source
 
 
 class MongoConnectorAction(ActionRunner):
