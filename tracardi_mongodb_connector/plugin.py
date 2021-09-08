@@ -43,7 +43,7 @@ def register() -> Plugin:
             className='MongoConnectorAction',
             inputs=["payload"],
             outputs=['payload'],
-            version='0.1.6',
+            version='0.1.7',
             license="MIT",
             author="Risto Kowaczewski",
             init={
