@@ -1,4 +1,7 @@
-from pydantic import BaseModel
+import json
+from json import JSONDecodeError
+from typing import Any, Union
+from pydantic import BaseModel, validator
 from tracardi.domain.entity import Entity
 
 
@@ -7,12 +10,15 @@ class MongoConfiguration(BaseModel):
     timeout: int = 5000
 
 
-class MongoResource(BaseModel):
-    database: str = None
-    collection: str = None
-
-
 class PluginConfiguration(BaseModel):
     source: Entity
-    mongo: MongoResource
-    query: dict = {}
+    database: str
+    collection: str
+    query: Union[str, Any] = "{}"
+
+    @validator("query")
+    def is_json(cls, value):
+        try:
+            return json.loads(value)
+        except JSONDecodeError as e:
+            raise ValueError("Can not parse this data as JSON. Error: `{}`".format(str(e)))

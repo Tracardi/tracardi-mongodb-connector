@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='tracardi-mongodb-connector',
-    version='0.1.7',
+    version='0.6.0',
     description='The purpose of this plugin is to connect to mongo and retrieve data.',
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -13,7 +13,7 @@ setup(
     author_email='risto.kowaczewski@gmail.com',
     packages=['tracardi_mongodb_connector'],
     install_requires=[
-        'tracardi_plugin_sdk>=0.6.8',
+        'tracardi_plugin_sdk>=0.6.22',
         'pydantic',
         'tracardi>=0.6.5',
         'motor~=2.5.0'

@@ -1,38 +1,37 @@
-from typing import Optional
-from tracardi_plugin_sdk.domain.register import Plugin, Spec, MetaData
+from tracardi.service.storage.driver import storage
+from tracardi_plugin_sdk.domain.register import Plugin, Spec, MetaData, Form, FormGroup, FormField, FormComponent
 from tracardi_plugin_sdk.action_runner import ActionRunner
 from tracardi_plugin_sdk.domain.result import Result
-
 from tracardi_mongodb_connector.model.client import MongoClient
 from tracardi_mongodb_connector.model.configuration import PluginConfiguration, MongoConfiguration
 
-from tracardi.service.storage.helpers.source_reader import read_source
+
+def validate(config: dict) -> PluginConfiguration:
+    return PluginConfiguration(**config)
 
 
 class MongoConnectorAction(ActionRunner):
 
     @staticmethod
     async def build(**kwargs) -> 'MongoConnectorAction':
-        plugin = MongoConnectorAction(**kwargs)
-        source = await read_source(plugin.config.source.id)
-        mongo_config = MongoConfiguration(
-            **source.config
-        )
+        config = validate(kwargs)
+        source = await storage.driver.resource.load(config.source.id)
+        mongo_config = MongoConfiguration(**source.config)
+        client = MongoClient(mongo_config)
+        return MongoConnectorAction(config, client)
 
-        plugin.client = MongoClient(mongo_config)
-
-        return plugin
-
-    def __init__(self, **kwargs):
-        self.config = PluginConfiguration(**kwargs)
-        self.client = None  # type: Optional[MongoClient]
+    def __init__(self, config: PluginConfiguration, client: MongoClient):
+        self.config = config
+        self.client = client
 
     async def run(self, payload):
-        result = await self.client.find(self.config.mongo.database, self.config.mongo.collection, self.config.query)
+        print(self.config.query)
+
+        result = await self.client.find(self.config.database, self.config.collection, self.config.query)
         return Result(port="payload", value={"result": result})
 
     # async def close(self):
-    #     self.client.close()
+    #     await self.client.close()
 
 
 def register() -> Plugin:
@@ -43,19 +42,56 @@ def register() -> Plugin:
             className='MongoConnectorAction',
             inputs=["payload"],
             outputs=['payload'],
-            version='0.1.7',
+            version='0.6.0',
             license="MIT",
             author="Risto Kowaczewski",
+            manual="mongo_query_action",
             init={
                 "source": {
                     "id": None,
                 },
-                "mongo": {
-                    "database": None,
-                    "collection": None
-                },
-                "query": {}
-            }
+                "database": None,
+                "collection": None,
+                "query": "{}"
+            },
+            form=Form(groups=[
+                FormGroup(
+                    name="MongoDB connection settings",
+                    fields=[
+                        FormField(
+                            id="source",
+                            name="MongoDB resource",
+                            description="Select MongoDB resource. Authentication credentials will be used to "
+                                        "connect to MongoDB server.",
+                            component=FormComponent(
+                                type="resource",
+                                props={"label": "resource"})
+                        )
+                    ]
+                ),
+                FormGroup(
+                    name="Query settings",
+                    fields=[
+                        FormField(
+                            id="database",
+                            name="Database",
+                            description="Type database URI you want to connect to.",
+                            component=FormComponent(type="text", props={"label": "Database URI"})
+                        ),
+                        FormField(
+                            id="collection",
+                            name="Collection",
+                            description="Type collection you would like to fetch data from.",
+                            component=FormComponent(type="text", props={"label": "Collection"})
+                        ),
+                        FormField(
+                            id="query",
+                            name="Query",
+                            description="Type query.",
+                            component=FormComponent(type="json", props={"label": "Query"})
+                        ),
+                    ])
+            ]),
 
         ),
         metadata=MetaData(
@@ -68,3 +104,4 @@ def register() -> Plugin:
             group=["Connectors"]
         )
     )
+

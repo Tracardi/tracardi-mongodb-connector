@@ -12,3 +12,7 @@ class MongoClient:
         database = self.client[database]
         collection = database[collection]
         return [data async for data in collection.find(query)]
+
+    async def close(self):
+        if self.client:
+            await self.client.close()
