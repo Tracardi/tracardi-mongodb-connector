@@ -1,3 +1,4 @@
+from tracardi.domain.resource import ResourceCredentials
 from tracardi.service.storage.driver import storage
 from tracardi_plugin_sdk.domain.register import Plugin, Spec, MetaData, Form, FormGroup, FormField, FormComponent
 from tracardi_plugin_sdk.action_runner import ActionRunner
@@ -15,18 +16,15 @@ class MongoConnectorAction(ActionRunner):
     @staticmethod
     async def build(**kwargs) -> 'MongoConnectorAction':
         config = validate(kwargs)
-        source = await storage.driver.resource.load(config.source.id)
-        mongo_config = MongoConfiguration(**source.config)
-        client = MongoClient(mongo_config)
-        return MongoConnectorAction(config, client)
+        resource = await storage.driver.resource.load(config.source.id)
+        return MongoConnectorAction(config, resource.credentials)
 
-    def __init__(self, config: PluginConfiguration, client: MongoClient):
+    def __init__(self, config: PluginConfiguration, credentials: ResourceCredentials):
+        mongo_config = credentials.get_credentials(self, output=MongoConfiguration)  # type: MongoConfiguration
+        self.client = MongoClient(mongo_config)
         self.config = config
-        self.client = client
 
     async def run(self, payload):
-        print(self.config.query)
-
         result = await self.client.find(self.config.database, self.config.collection, self.config.query)
         return Result(port="payload", value={"result": result})
 
@@ -42,7 +40,7 @@ def register() -> Plugin:
             className='MongoConnectorAction',
             inputs=["payload"],
             outputs=['payload'],
-            version='0.6.0',
+            version='0.6.0.1',
             license="MIT",
             author="Risto Kowaczewski",
             manual="mongo_query_action",
@@ -65,7 +63,7 @@ def register() -> Plugin:
                                         "connect to MongoDB server.",
                             component=FormComponent(
                                 type="resource",
-                                props={"label": "resource"})
+                                props={"label": "resource", "tag": "mongo"})
                         )
                     ]
                 ),
